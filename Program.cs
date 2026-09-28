@@ -9,7 +9,7 @@ try
 
     bixin.ExibirNome();
 
-    bixin.DefinirNome("");
+    
 }
 catch (ArgumentException ex)
 {
