@@ -129,6 +129,58 @@ namespace TamagochiCSharp
             Console.WriteLine($"{Nome} está na fase {EstagioVidaAtual}");
         }
 
+        public void ExibirFomeAtual()
+        {
+            if (FomeAtual <= 10)
+            {
+                Console.WriteLine($"{Nome} está com um barrigão");
+            }
+            else if (FomeAtual <= 35)
+            {
+                Console.WriteLine($"{Nome} está cheio");
+            }
+            else if (FomeAtual <= 55)
+            {
+                Console.WriteLine($"{Nome} está satisfeito");
+            }
+            else if (FomeAtual <= 70)
+            {
+                Console.WriteLine($"{Nome} está com fominha");
+            }
+            else
+            {
+                Console.WriteLine($"{Nome} está faminto coitado");
+            }
+        }
+
+        public void ExibirEnergiaAtual() 
+        {
+            if (EnergiaAtual <= 100 && EnergiaAtual >= 85)
+            {
+                Console.WriteLine($"{Nome} está elétrico cuidado");
+            }
+            else if (EnergiaAtual >= 60)
+            {
+                Console.WriteLine($"{Nome} está bem disposto");
+            }
+            else if (EnergiaAtual >= 40)
+            {
+                Console.WriteLine($"{Nome} está normal");
+            }
+            else if (EnergiaAtual >= 16)
+            {
+                Console.WriteLine($"{Nome} está cansado");
+            }
+            else if (EnergiaAtual > 1)
+            {
+                Console.WriteLine($"{Nome} está desmaiando");
+            }
+            else if (EnergiaAtual == 1)
+            {
+                Console.WriteLine($"{Nome} desmaiou");
+            }
+        }
+
         private void CalculaTempoTotalDeVida()
         {
             TempoDeVida = DateTime.Now - DataNascimento;
