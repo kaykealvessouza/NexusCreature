@@ -5,11 +5,14 @@ namespace TamagochiCSharp
 
         private static readonly Random random = new Random();
 
-        public string Nome { get; private set; }
+        public string Nome { get; private set; } = null!;
 
         public DateTime DataNascimento { get; private set; }
         public TimeSpan TempoDeVida { get; private set; }
         public int DiasDeVida {get; private set;}
+        public int AnosDeVida { get; private set; }
+        public int MesesDeVida { get; private set; }
+        public int DiasRestantes { get; private set; }
 
         public int FomeAtual { get; private set; } // 0 - 10 Barrigao, 11 - 35 Cheio, 36 - 55 Satisfeito, 56 - 70 Fomezinha, 71 - 100 Faminto
         public int EnergiaAtual { get; private set; } // 100 - 85 Eletrico, 84 - 60 Disposto, 59 - 40 Normal, 39 - 16 Cansado, 15 - 1 Desmaiando, 0 Desmaiou
@@ -53,12 +56,8 @@ namespace TamagochiCSharp
         public Criatura(string nome)
         {
             //Não Pode deixar o bixinho sem nome coitado
-            if (string.IsNullOrWhiteSpace(nome))
-            {
-                throw new ArgumentException("O nome não pode ser vazio.");
-            }
+            DefinirNome(nome);
 
-            Nome = nome;
             DataNascimento = DateTime.Now;
 
             FomeAtual = 20;
@@ -70,10 +69,9 @@ namespace TamagochiCSharp
             SentimentoAtual = SortearSentimento();
 
             HumorAtual = SortearHumor();
-
         }
 
-        public Sentimento SortearSentimento()
+        private Sentimento SortearSentimento()
         {
             Sentimento[] Sentimentos = Enum.GetValues<Sentimento>(); //Pega todos o valores do enum e bota num array
 
@@ -82,7 +80,7 @@ namespace TamagochiCSharp
             return Sentimentos[indiceAleatorio]; //Retorna o sentimento num indice aleatório
         }
 
-        public Humor SortearHumor()
+        private Humor SortearHumor()
         {
             Humor[] Humores = Enum.GetValues<Humor>();; //Pega todos o valores do enum e bota num array
 
@@ -95,7 +93,12 @@ namespace TamagochiCSharp
         {
             if (string.IsNullOrWhiteSpace(nome))
             {
-                throw new ArgumentException("O nome não pode ser vazio.");
+                throw new ArgumentException("O nome não pode ser vazio.", nameof(nome));
+            }
+
+            if (nome.Equals(this.Nome, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("O nome é o mesmo.", nameof(nome));
             }
 
             Nome = nome;
@@ -106,97 +109,109 @@ namespace TamagochiCSharp
             Console.WriteLine($"O nome do seu bixinho é {Nome}");
         }
 
-        public void CalculaTempoTotalDeVida()
+        public void ExibirDataNascimento()
+        {
+            Console.WriteLine($"O {Nome} nasceu na data {DataNascimento}");
+        }
+
+        public void ExibirHumor()
+        {
+            Console.WriteLine($"{Nome} está com se sentindo {HumorAtual}");
+        }
+
+        public void ExibirSentimento()
+        {
+            Console.WriteLine($"{Nome} está {SentimentoAtual}");
+        }
+
+        public void ExibirEstagioVida()
+        {
+            Console.WriteLine($"{Nome} está na fase {EstagioVidaAtual}");
+        }
+
+        private void CalculaTempoTotalDeVida()
         {
             TempoDeVida = DateTime.Now - DataNascimento;
 
             DiasDeVida = TempoDeVida.Days;
+
+            AnosDeVida = DiasDeVida / 365;
+
+            int resto = DiasDeVida % 365;
+
+            MesesDeVida = resto / 28;
+
+            DiasRestantes = resto % 28;
         }
 
-        public List<int> CalculandoListaTempoTotalDeVida()
+        private string FormatarUnidade(int quantidade, string singular, string plural)
         {
-
-            CalculaTempoTotalDeVida(); //Chama método que atualiza o tempo de vida e transforma em dias
-
-            List<int> ListaTemposDeVida = new List<int>();
-
-            int AnosDeVida = DiasDeVida / 365; //Calcula os anos
-
-            ListaTemposDeVida.Add(AnosDeVida); //Insere anos na posição 0
-
-            int resto = DiasDeVida % 365; //Pega o que sobrou que não virou ano
-
-            int MesesDeVida = resto / 28; //Vira meses
-
-            ListaTemposDeVida.Add(MesesDeVida); //Coloca meses na posição 1
-
-            int DiasRestantes = resto % 28; //Dias restante são o que sobrou
-
-            ListaTemposDeVida.Add(DiasRestantes); //Coloca na posição 2
-
-            return ListaTemposDeVida;
+            if (quantidade == 1)
+            {
+                return $"{quantidade} {singular}";
+            }
+            else if (quantidade > 1)
+            {
+                return $"{quantidade} {plural}";
+            }
+            else
+            {
+                return "";
+            }
         }
 
         public void ExibirTempoDeVida()
         {
 
-            List<int> ListaTempoTotalDeVida = CalculandoListaTempoTotalDeVida();
+            CalculaTempoTotalDeVida();
 
-            Console.WriteLine("O seu bixinho possui:");
+            string anos = FormatarUnidade(AnosDeVida, "ano", "anos");
+            string meses = FormatarUnidade(MesesDeVida, "mês", "meses");
+            string dias = FormatarUnidade(DiasRestantes, "dia", "dias");
+            string horas = FormatarUnidade(TempoDeVida.Hours, "hora", "horas");
+            string minutos = FormatarUnidade(TempoDeVida.Minutes, "minuto", "minutos");
 
-            if(ListaTempoTotalDeVida[0] == 1)//0 é ano
-            {
-                Console.WriteLine($"1 ano;");
-            }
-            else if(ListaTempoTotalDeVida[0] > 1)
-            {
-                Console.WriteLine($"{ListaTempoTotalDeVida[0]} anos;");
-            }
+            int variaveisComValor = 0;
+            int textosInseridos = 0;
 
-            if(ListaTempoTotalDeVida[1] == 1)//1 é mes
-            {
-                Console.WriteLine($"1 mês;");
-            }
-            else if (ListaTempoTotalDeVida[1] > 1)
-            {
-                Console.WriteLine($"{ListaTempoTotalDeVida[1]} meses;");
-            }
+            string textoFinal = "O seu bixinho possui: ";
 
-            if(ListaTempoTotalDeVida[2] == 1)//2 é dia
+            string[] unidades = { anos, meses, dias, horas, minutos };
+
+            foreach (var texto in unidades)
             {
-                Console.WriteLine($"1 dia;");
-            }
-            else if (ListaTempoTotalDeVida[2] > 1)
-            {
-                Console.WriteLine($"{ListaTempoTotalDeVida[2]} dias;");
+                if (!string.IsNullOrWhiteSpace(texto))
+                {
+                    variaveisComValor++;
+                }
             }
 
-            if(TempoDeVida.Hours == 1)
+            if (variaveisComValor == 0)
             {
-                Console.WriteLine($"1 hora;");
+                textoFinal += "Menos de um minuto de vida";
             }
-            else if (TempoDeVida.Hours > 1)
+            else
             {
-                Console.WriteLine($"{TempoDeVida.Hours} horas;");
+                foreach (var texto in unidades)
+                {
+                    if (!string.IsNullOrWhiteSpace(texto))
+                    {
+                        textoFinal += texto; //Adiciona X anos/ano
+                        textosInseridos++;
+
+                        if (textosInseridos == (variaveisComValor - 1))
+                        {
+                            textoFinal += " e ";
+                        }
+                        else if (textosInseridos < variaveisComValor)
+                        {
+                            textoFinal += ", ";
+                        }
+                    }
+                }
             }
 
-            if(TempoDeVida.Minutes == 1)
-            {
-                Console.WriteLine($"1 minuto;");
-            }
-            else if(TempoDeVida.Minutes > 1)
-            {
-                Console.WriteLine($"{TempoDeVida.Minutes} minutos;");
-            }
-
-            if(TempoDeVida.Seconds == 1)
-            {
-                Console.WriteLine($"e 1 segundo de vida.");
-            }
-            else if (TempoDeVida.Seconds > 1)
-            {
-                Console.WriteLine($"e {TempoDeVida.Seconds} segundos de vida.");
-            }
+            Console.WriteLine(textoFinal);
         }
     }
 }
