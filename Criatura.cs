@@ -20,6 +20,18 @@ namespace TamagochiCSharp
         public EstagioVida EstagioVidaAtual { get; private set; }
         public Humor HumorAtual { get; private set; }
         public Sentimento SentimentoAtual { get; private set; }
+        public EstadoAtividade EstadoAtividadeAtual { get; private set; }
+
+        public enum EstadoAtividade
+        {
+            Acordado,
+            Brincando,
+            trabalhando,
+            exercitando,
+            estudando,
+            Descansando,
+            Dormindo
+        }
 
         public enum Humor
         {
@@ -66,6 +78,8 @@ namespace TamagochiCSharp
 
             EstagioVidaAtual = EstagioVida.Ovinho;
 
+            EstadoAtividadeAtual = EstadoAtividade.Acordado;
+
             SentimentoAtual = SortearSentimento();
 
             HumorAtual = SortearHumor();
@@ -102,6 +116,39 @@ namespace TamagochiCSharp
             }
 
             Nome = nome;
+        }
+
+        public void DefinirFomeAtual(int novaFome)
+        {
+            if (novaFome > 100 || novaFome < 0)
+            {
+                throw new ArgumentOutOfRangeException("A fome do bixinho se mantém de 0 a 100!");
+            }
+
+            FomeAtual = novaFome;
+        }
+
+        public void DefinirEnergiaAtual(int novaEnergia)
+        {
+            if (novaEnergia > 100 || novaEnergia < 0)
+            {
+                throw new ArgumentOutOfRangeException("A Energia do bixinho se mantém de 0 a 100!");
+            }
+         
+            EnergiaAtual = novaEnergia;
+        }
+
+        public void DefinirEstadoAtividadeAtual(EstadoAtividade novoEstadoAtividade)
+        {
+            if (!Enum.IsDefined(novoEstadoAtividade))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(novoEstadoAtividade),
+                    "Estado de atividade inválido."
+                );
+            }
+
+            EstadoAtividadeAtual = novoEstadoAtividade;
         }
 
         public void ExibirNome()
@@ -264,6 +311,16 @@ namespace TamagochiCSharp
             }
 
             Console.WriteLine(textoFinal);
+        }
+
+        public int GetFomeAtual()
+        {
+            return FomeAtual;
+        }
+
+        public int GetEnergiaAtual()
+        {
+            return EnergiaAtual;
         }
     }
 }
